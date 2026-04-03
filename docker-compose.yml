@@ -1,0 +1,12 @@
+services:
+  schedule-listener:
+    image: 590183751536.dkr.ecr.ap-southeast-1.amazonaws.com/pixelsofts/goschedule-listener:latest
+    container_name: goschedule-listener
+    env_file:
+      - .env
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
