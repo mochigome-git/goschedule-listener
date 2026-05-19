@@ -105,6 +105,15 @@ func (l *Listener) handleChange(payload map[string]any) {
 		return
 	}
 
+	// If no future schedules remain, clear the retained message on the broker
+	if len(schedules) == 0 {
+		log.Printf("No future schedules for device [%s], clearing retained message", deviceName)
+		if err := l.mqClient.ClearRetained(deviceName); err != nil {
+			log.Println("MQTT clear retained error:", err)
+		}
+		return
+	}
+
 	if err := l.mqClient.Publish(deviceName, schedules); err != nil {
 		log.Println("MQTT publish error:", err)
 		return

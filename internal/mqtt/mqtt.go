@@ -103,11 +103,19 @@ func (c *Client) Publish(deviceName string, schedules []db.ScheduleEntry) error 
 		return err
 	}
 
-	token := c.client.Publish(topic, 1, false, payload)
+	token := c.client.Publish(topic, 1, true, payload)
 	token.Wait()
 	return token.Error()
 }
 
 func (c *Client) Disconnect() {
 	c.client.Disconnect(500)
+}
+
+func (c *Client) ClearRetained(deviceName string) error {
+	topic := fmt.Sprintf("machine/schedule/%s", deviceName)
+	// Empty payload + retained=true tells the broker to delete the retained message
+	token := c.client.Publish(topic, 1, true, []byte(""))
+	token.Wait()
+	return token.Error()
 }
